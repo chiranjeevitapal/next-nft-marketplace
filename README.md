@@ -1,56 +1,105 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Full stack NFT marketplace built with Polygon, Solidity, IPFS, & Next.js
 
-## Getting Started
+### Running this project
 
-First, run the development server:
+#### Gitpod
 
-```bash
-npm run dev
-# or
-yarn dev
+To deploy this project to Gitpod, follow these steps:
+
+1. Click this link to deploy
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#github.com/chiranjeevitapal/next-nft-marketplace)
+
+2. Import the RPC address given to you by GitPod into your MetaMask wallet
+
+This endpoint will look something like this:
+
+```
+https://8545-copper-swordtail-j1mvhxv3.ws-eu18.gitpod.io/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The chain ID should be 1337. If you have a localhost rpc set up, you may need to overwrite it.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+![MetaMask RPC Import](wallet.png)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+#### Local setup
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+To run this project locally, follow these steps.
 
-## Learn More
+1. Clone the project locally, change into the directory, and install the dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+```sh
+git clone https://github.com/chiranjeevitapal/next-nft-marketplace.git
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+cd next-nft-marketplace
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# install using NPM or Yarn
+npm install
 
-## Deploy on Vercel
+# or
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+yarn
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+2. Start the local Hardhat node
 
-
-# Basic Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
+```sh
 npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
+```
 
-# Start a local node
-npx hardhat node
-# Deploy scripts in local environment
+3. With the network running, deploy the contracts to the local network in a separate terminal window
+
+```sh
 npx hardhat run scripts/deploy.js --network localhost
 ```
+
+4. Start the app
+
+```
+npm run dev
+```
+
+### Configuration
+
+To deploy to Polygon test or main networks, update the configurations located in __hardhat.config.js__ to use a private key and, optionally, deploy to a private RPC like Infura.
+
+```javascript
+require("@nomiclabs/hardhat-waffle");
+const fs = require('fs');
+const privateKey = fs.readFileSync(".secret").toString().trim() || "01234567890123456789";
+
+// infuraId is optional if you are using Infura RPC
+const infuraId = fs.readFileSync(".infuraid").toString().trim() || "";
+
+module.exports = {
+  defaultNetwork: "hardhat",
+  networks: {
+    hardhat: {
+      chainId: 1337
+    },
+    mumbai: {
+      // Infura
+      // url: `https://polygon-mumbai.infura.io/v3/${infuraId}`
+      url: "https://rpc-mumbai.matic.today",
+      accounts: [privateKey]
+    },
+    matic: {
+      // Infura
+      // url: `https://polygon-mainnet.infura.io/v3/${infuraId}`,
+      url: "https://rpc-mainnet.maticvigil.com",
+      accounts: [privateKey]
+    }
+  },
+  solidity: {
+    version: "0.8.4",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  }
+};
+```
+
+If using Infura, update __.infuraid__ with your [Infura](https://infura.io/) project ID.
